@@ -84,8 +84,9 @@ int main(int argc,char **argv)
             }
         }
         printf("\n\nRuntime: %lf seconds",total);
+        printf("\n\n");
     }
-    printf("\n");
+
     MPI_Finalize();
 
     return 0;
