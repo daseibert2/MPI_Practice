@@ -83,7 +83,7 @@ int main(int argc,char **argv)
                 printf("%d ",array[i]);        //else, print #
             }
         }
-        printf("\n\nRuntime: %lf",total);
+        printf("\n\nRuntime: %lf seconds",total);
     }
     printf("\n");
     MPI_Finalize();
