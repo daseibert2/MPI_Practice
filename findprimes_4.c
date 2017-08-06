@@ -9,7 +9,7 @@ int main(int argc,char **argv)
     clock_t start,end;                       //initialize clock
 
     int i,j,k,l,rank,size,array[N];         //creating counters and array
-    double total,total1,total2;
+    double total,total1[5];
 
     array[0]=0;
     array[1]=0;                             //filling array
@@ -25,7 +25,7 @@ int main(int argc,char **argv)
     if(rank==0)
     {                                         //if in first node
         start=clock();
-        for(j=2;j<(sqrt(N-1)/2)+2;j++)      //2 to 51
+        for(j=2;j<((sqrt(N-1)/4)+2);j++)        //2 to 26
         {
             if(array[j]>0)                  //if unassigned
             {
@@ -37,14 +37,14 @@ int main(int argc,char **argv)
 
         }
         end=clock();
-        total1=(double)(end-start)/CLOCKS_PER_SEC;
+        total1[0]=(double)(end-start)/CLOCKS_PER_SEC;
     }
 
 
     if(rank==1)
     {                                               //if in node 2
         start=clock();
-        for(j=(sqrt(N-1)/2)+2;j<=sqrt(N-1);j++)     //52 to 100
+        for(j=((sqrt(N-1)/4)+2);j<((sqrt(N-1)/2)+2);j++)    //27 to 51
         {
             if(array[j]>0)                      //if unassigned
             {
@@ -56,22 +56,59 @@ int main(int argc,char **argv)
 
         }
         end=clock();
-        total2=(double)(end-start)/CLOCKS_PER_SEC;
+        total1[1]=(double)(end-start)/CLOCKS_PER_SEC;
     }
 
-    if(total1>total2)
-    {
-        total=(double)(total1);
+    if(rank==2)
+    {                                               //if in node 2
+        start=clock();
+        for(j=((sqrt(N-1)/2)+2);j<((sqrt(N-1)*(3/4))+2);j++)    //52 to 76
+        {
+            if(array[j]>0)                      //if unassigned
+            {
+                for(k=j*2;k<N;k+=j)             //2j,2j+j,2j+2j,...
+                {
+                    array[k]=0;                 //reassign to 0
+                }
+            }
+
+        }
+        end=clock();
+        total1[2]=(double)(end-start)/CLOCKS_PER_SEC;
     }
-    else
-    {
-        total=(double)(total2);
+    if(rank==3)
+    {                                               //if in node 2
+        start=clock();
+        for(j=((sqrt(N-1)*(3/4))+2);j<=sqrt(N-1);j++)    //77 to 100
+        {
+            if(array[j]>0)                      //if unassigned
+            {
+                for(k=j*2;k<N;k+=j)             //2j,2j+j,2j+2j,...
+                {
+                    array[k]=0;                 //reassign to 0
+                }
+            }
+
+        }
+        end=clock();
+        total1[3]=(double)(end-start)/CLOCKS_PER_SEC;
     }
+
+    total=-1000000;
+
+    for(i=0;i<=3;i++)
+    {
+        if(total1[i]>total)
+        {
+            total=(double)total1[i];
+        }
+    }
+
 
     if(rank==0)
     {
         printf("1. Find prime numbers:\n\n");
-        printf("2 processes:\n\n");
+        printf("4 processes:\n\n");
         for(i=0;i<N;i++)
         {
             if(array[i]==0)
@@ -84,7 +121,7 @@ int main(int argc,char **argv)
             }
         }
         printf("\n\nRuntime: %lf seconds",total);
-        printf("\n\n");
+        printf("\n");
     }
 
     MPI_Finalize();
